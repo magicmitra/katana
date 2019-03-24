@@ -3,9 +3,11 @@
  * dbDevTest -> name if the DB to hold collections of businesses
  */
 
-const mongo = require('mongodb');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '/../.env') });
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017/';
+const dbLocalHost = process.env.dbLocalHost;
+const url = `mongodb://localhost:${dbLocalHost}/`;
 const businessLAFake = require('../tests/businessLAFake');
 
 MongoClient.connect(url, (err, db) => {
