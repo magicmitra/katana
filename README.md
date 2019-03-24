@@ -1,2 +1,4 @@
 # server
-Back-end portion of application
+Katana - a backend server.
+
+
