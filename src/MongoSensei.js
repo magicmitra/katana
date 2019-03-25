@@ -38,6 +38,7 @@ class MongoSensei {
                 // seed the created collection. use insertMany()
                 dbObject.collection(this.collectionName).insertMany(items, (err, res) => {
                     if(err) throw err;
+                    // res.ops to get the document section only
                     mongoClient.close();
                 });
             });
