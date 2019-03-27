@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const dataSnatcher = require('./src/dataSnatcher');
+const { MongoSensei } = require('./src/MongoSensei');
 
 const app = express();
 
@@ -14,6 +15,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+
+// connect to MongoDB/Mongoose/Atlas
+const mongoClient = new MongoSensei();
+mongoClient.connect();
 
 // static middleware
 app.use(express.static(path.join(__dirname, 'public')));
