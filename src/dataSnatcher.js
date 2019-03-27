@@ -6,6 +6,8 @@ const FileSync = require('lowdb/adapters/FileSync');
 const businessLA = require('../sample-data/los-angeles-data/businessLA');
 const auraList = require('../sample-data/aura/auras.json');
 const { yelpAPI } = require('../src/API');
+const Business = require('../models/business.model');
+const { MongoSensei } = require('./MongoSensei');
 
 /* Create the DB, if it doesn't exist, then seed it
  * with data.
@@ -20,12 +22,8 @@ const router = express.Router();
 
 // GET request
 router.get('/api/resources', (req, res) => {
-  let businessData = db.get('businessData').value();
-  if (req.query.aura) {
-    const { aura } = req.query;
-    businessData = businessData.filter(venue => venue.attributes.Aura.includes(aura));
-  }
-  res.json(businessData);
+  const db = new MongoSensei();
+  db.senseiGet(req, res);
 });
 
 // GET request for aura list

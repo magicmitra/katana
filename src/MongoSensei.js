@@ -5,69 +5,32 @@
 
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '/../.env') });
-const MongoClient = require('mongodb').MongoClient;
-const Server = require('mongodb').Server;
-const dbLocalHost = process.env.dbLocalHost;
-const businessLAFake = require('../tests/businessLAFake');
-
+const mongoose = require('mongoose');
+const Business = require('../models/business.model');
 
 class MongoSensei {
-    //==============================constructor=========================================
-    /** 
-     * @param {*} nameOfDatabase -> name of the database
-     * initialize the Database, MongoClient and Database Object
-     */
-    constructor(databaseName) {
-        this.databaseName = databaseName;
-        this.mongoClient = new MongoClient(new Server('localhost', `${dbLocalHost}`));
-        this.collectionName = 'businesses';
-    }
-    //====================================================================================
+    //=============================constructor=================================
+    constructor() {/** none in here */}
+    //==========================================================================
 
-    //===============================seed the database====================================
-    seed(items) {
-        try {
-            // connect MongoClient
-            this.mongoClient.connect((err, mongoClient) => {
-                if(err) throw err;
-                const dbObject = this.mongoClient.db(this.databaseName);
-                // create a collection
-                dbObject.createCollection(this.collectionName, (err, res) => {
-                    if(err) throw err;
-                });
-                // seed the created collection. use insertMany()
-                dbObject.collection(this.collectionName).insertMany(items, (err, res) => {
-                    if(err) throw err;
-                    // res.ops to get the document section only
-                    mongoClient.close();
-                });
-            });
-        }
-        catch(err){
-            console.error(err);
-        }
+    //=============================connect to the DB============================
+    connect() {
+        mongoose.connect(
+            `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/kat?retryWrites=true`,
+            {useNewUrlParser: true} 
+        )
     }
-    //=====================================================================================
+    //==========================================================================
 
-    //==============================add one entry to the database============================
-    addEntry(item) {
-        try{    
-            // connect MongoClient
-            this.mongoClient.connect((err, mongoClient) => {
-                if(err) throw err;
-                const dbObject = this.mongoClient.db(this.databaseName);
-                // add the entry, use insertOne
-                dbObject.collection(this.collectionName).insertOne(item, (err, res) => {
-                    if(err) throw err;
-                    mongoClient.close();
-                })
-            });
-        }
-        catch(err) {
-            console.error(err);
-        }
+    senseiGet(req, res) {
+        Business
+            .find()
+            .where('name')
+            .regex(req.query.filter || '')
+            .then(businesses => res.json(businesses));
     }
 }
+
 
 module.exports = {
     MongoSensei,
